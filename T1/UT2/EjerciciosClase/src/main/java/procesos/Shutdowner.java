@@ -1,6 +1,7 @@
 package procesos;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Shutdowner {
@@ -25,6 +26,10 @@ public class Shutdowner {
 
         // Prepare the process and launch it
         ProcessBuilder shutdowner = new ProcessBuilder(command.split("\\s"));
+        Map<String, String> entorno = shutdowner.environment();
+        // String path = entorno.get("Path");
+        // String current_path = path + ";C:/Temp";
+        // entorno.replace("Path", current_path);
         Process process = shutdowner.start();
 
         // Show the command to be run
