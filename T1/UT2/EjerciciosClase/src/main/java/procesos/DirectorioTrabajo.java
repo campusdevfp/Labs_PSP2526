@@ -27,7 +27,7 @@ public class DirectorioTrabajo {
         System.out.println("user.dir: " + System.getProperty("user.dir"));
         System.out.println();
 
-        // 2️⃣ Cambiar la propiedad user.dir
+        // 2️⃣ Cambiar la propiedad user.dir but no afecta a ProcessBuilder
         System.setProperty("user.dir", System.getProperty("user.home"));
 
         System.out.println("== 2. Después de cambiar la propiedad user.dir ==");
