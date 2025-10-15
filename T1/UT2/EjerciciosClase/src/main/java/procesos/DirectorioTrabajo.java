@@ -3,63 +3,63 @@ package procesos;
 import java.io.File;
 import java.io.IOException;
 
+
+
 public class DirectorioTrabajo {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        // Prepara el comando según el sistema operativo
-        String command;
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            command = "cmd /c dir";
+
+        String sistemaOperativo = System.getProperty("os.name").toLowerCase();
+        String comando;
+
+        // Detectar sistema operativo y comando adecuado
+        if (sistemaOperativo.startsWith("windows")) {
+            comando = "cmd /c dir";
         } else {
-            command = "sh -c ls";
+            comando = "sh -c ls -l";
         }
 
-        // 1º - Directorio de trabajo por defecto
+        // 1️⃣ Crear el ProcessBuilder
+        ProcessBuilder pb = new ProcessBuilder(comando.split("\\s"));
 
-        // Prepara el proceso
-        ProcessBuilder commander = new ProcessBuilder(command.split("\\s"));
-        commander.inheritIO();
+        System.out.println("== 1. Después de crear la instancia de ProcessBuilder ==");
+        System.out.println("directory(): " + pb.directory());
+        System.out.println("user.dir: " + System.getProperty("user.dir"));
+        System.out.println();
 
-        // Muestra propiedades del proceso y del sistema
-        System.out.println("Directorio de trabajo: " + commander.directory());
-        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
-
-        // Lanza el proceso y muestra su resultado
-        // El directorio de trabajo es null pero el proceso se ejecuta en el directorio actual
-        commander.start().waitFor();
-
-
-        // 2º - Cambia user.dir pero no el directorio de trabajo
-
-        // Cambia la propiedad del sistema user.dir
+        // 2️⃣ Cambiar la propiedad user.dir
         System.setProperty("user.dir", System.getProperty("user.home"));
 
-        // Prepara el proceso
-        commander = new ProcessBuilder(command.split("\\s"));
-        commander.inheritIO();
+        System.out.println("== 2. Después de cambiar la propiedad user.dir ==");
+        System.out.println("directory(): " + pb.directory());
+        System.out.println("user.dir: " + System.getProperty("user.dir"));
+        System.out.println();
 
-        // Muestra propiedades del proceso y del sistema
-        System.out.println("Directorio de trabajo: " + commander.directory());
-        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
+        // 3️⃣ Cambiar el directorio de trabajo
+        String nuevoDirectorio;
+        if (sistemaOperativo.startsWith("windows")) {
+            nuevoDirectorio = "C:" +
+                    "\\Temp";
+        } else {
+            nuevoDirectorio = "/tmp";
+        }
 
-        // Lanza el proceso y muestra su resultado
-        // El directorio de trabajo es null pero el proceso se ejecuta en el directorio actual
-        commander.start().waitFor();
-        System.out.println("El proceso se ha lanzado, y sí espera su finalización.");
+        pb.directory(new File(nuevoDirectorio));
 
-        // 3º - Cambia el directorio de trabajo
+        System.out.println("== 3. Después de cambiar el directorio de trabajo ==");
+        System.out.println("directory(): " + pb.directory());
+        System.out.println("user.dir: " + System.getProperty("user.dir"));
+        System.out.println();
 
-        // Prepara el proceso
-        commander = new ProcessBuilder(command.split("\\s"));
-        commander.inheritIO();
+        System.out.println("== 4. Ejecución del comando " + (sistemaOperativo.startsWith("windows") ? "dir" : "ls -l") + " ==");
 
-        // Muestra propiedades del proceso y del sistema
-        commander.directory(new File(System.getProperty("user.home")));
-        System.out.println("Directorio de trabajo: " + commander.directory());
-        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
+        // 4️⃣ Ejecutar el proceso y redirigir E/S a la consola actual
+        pb.inheritIO();
 
-        // Lanza el proceso y muestra su resultado
-        // El directorio de trabajo es user.home y el proceso se ejecuta ahí
-        commander.start().waitFor();
+        Process proceso = pb.start();
+        int codigoSalida = proceso.waitFor();
+
+        System.out.println();
+        System.out.println("El proceso terminó con código de salida: " + codigoSalida);
     }
 }
