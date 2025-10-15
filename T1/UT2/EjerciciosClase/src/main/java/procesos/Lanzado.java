@@ -1,34 +1,31 @@
 package procesos;
 
+import java.io.IOException;
 
 public class Lanzado {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("Debes indicar el programa a ejecutar como parámetro.");
+            System.err.println("No se ha indicado ningún programa para ejecutar.");
             System.exit(1);
         }
 
         String programa = args[0];
 
         try {
-            // 1️⃣ Crear el proceso con ProcessBuilder
             ProcessBuilder pb = new ProcessBuilder(programa);
-            pb.inheritIO(); // redirige entrada/salida/errores a la consola actual
-
-            // 2️⃣ Lanzar el proceso
+            pb.inheritIO();
             Process proceso = pb.start();
 
-            // 3️⃣ Esperar su finalización y recoger código de salida
-            int codigoSalida = proceso.waitFor();
+            int codigoSalida = proceso.waitFor(); // Espera a que termine el proceso
+            System.exit(codigoSalida); // Devuelve su mismo código de salida
 
-            // 4️⃣ Devolver el mismo código de salida
-            System.exit(codigoSalida);
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Error al ejecutar el programa: " + e.getMessage());
-            System.exit(1); // código distinto de cero = error
+            System.exit(1);
+        } catch (InterruptedException e) {
+            System.err.println("El proceso fue interrumpido.");
+            System.exit(2);
         }
     }
 }
-

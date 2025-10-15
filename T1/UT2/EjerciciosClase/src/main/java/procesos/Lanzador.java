@@ -1,38 +1,34 @@
 package procesos;
 
 
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Lanzador {
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Introduce el programa que deseas ejecutar (por ejemplo, notepad.exe): ");
+        String programa = sc.nextLine();
+        sc.close();
+
         try {
-            // 1️⃣ Preguntar al usuario qué programa desea ejecutar
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            System.out.print("Introduce el programa que deseas ejecutar (por ejemplo, notepad.exe): ");
-            String programa = br.readLine();
-
-            // 2️⃣ Crear el proceso para lanzar U2A4_Lanzado
+            // Creamos el proceso que lanzará la clase U2A4_Lanzado, pasándole el programa como parámetro
             ProcessBuilder pb = new ProcessBuilder(
-                    "java", "psp.activities.U2A4_Lanzado", programa);
-            pb.inheritIO(); // muestra la salida en la misma consola
+                    "java", "procesos.Lanzado", programa);
+            pb.inheritIO(); // hereda entrada/salida de la consola
 
-            // 3️⃣ Lanzar el proceso
             Process proceso = pb.start();
-
-            // 4️⃣ Esperar a que termine y recoger el código de salida
             int codigoSalida = proceso.waitFor();
 
-            // 5️⃣ Mostrar resultado según el código
+            // Mostramos resultado
             if (codigoSalida == 0) {
-                System.out.println("✅ El proceso terminó correctamente. Código: " + codigoSalida);
+                System.out.println("✅ El proceso terminó correctamente (código 0)");
             } else {
-                System.out.println("❌ El proceso terminó con errores. Código: " + codigoSalida);
+                System.out.println("❌ El proceso terminó con errores (código " + codigoSalida + ")");
             }
 
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             System.err.println("Error al lanzar el proceso: " + e.getMessage());
         }
     }
