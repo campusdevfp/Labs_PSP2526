@@ -6,7 +6,7 @@ import java.io.IOException;
 public class DirectorioTrabajo {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        // Prepare the command
+        // Prepara el comando según el sistema operativo
         String command;
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             command = "cmd /c dir";
@@ -14,52 +14,52 @@ public class DirectorioTrabajo {
             command = "sh -c ls";
         }
 
-        //1st - Default working directory
+        // 1º - Directorio de trabajo por defecto
 
-        // Prepare the process
+        // Prepara el proceso
         ProcessBuilder commander = new ProcessBuilder(command.split("\\s"));
         commander.inheritIO();
 
-        // Show Process and System properties
-        System.out.println("Working directory: " + commander.directory());
-        System.out.println("user.dir variable: " + System.getProperty("user.dir"));
+        // Muestra propiedades del proceso y del sistema
+        System.out.println("Directorio de trabajo: " + commander.directory());
+        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
 
-        // Launch the process and show its result
-        // Working directory is null but the process is run on the current dir
+        // Lanza el proceso y muestra su resultado
+        // El directorio de trabajo es null pero el proceso se ejecuta en el directorio actual
         commander.start().waitFor();
 
 
-        //2nd - Change user.dir but not the working directory
+        // 2º - Cambia user.dir pero no el directorio de trabajo
 
-        // Change the user.dir system property
+        // Cambia la propiedad del sistema user.dir
         System.setProperty("user.dir", System.getProperty("user.home"));
 
-        // Prepare the process
+        // Prepara el proceso
         commander = new ProcessBuilder(command.split("\\s"));
         commander.inheritIO();
 
-        // Show Process and System properties
-        System.out.println("Working directory: " + commander.directory());
-        System.out.println("user.dir variable: " + System.getProperty("user.dir"));
+        // Muestra propiedades del proceso y del sistema
+        System.out.println("Directorio de trabajo: " + commander.directory());
+        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
 
-        // Launch the process and show its result
-        // Working directory is null but the process is run on the current dir
+        // Lanza el proceso y muestra su resultado
+        // El directorio de trabajo es null pero el proceso se ejecuta en el directorio actual
         commander.start().waitFor();
+        System.out.println("El proceso se ha lanzado, y sí espera su finalización.");
 
+        // 3º - Cambia el directorio de trabajo
 
-        // 3rd - Change the working directory
-
-        // Prepare the process
+        // Prepara el proceso
         commander = new ProcessBuilder(command.split("\\s"));
         commander.inheritIO();
 
-        // Show Process and System properties
+        // Muestra propiedades del proceso y del sistema
         commander.directory(new File(System.getProperty("user.home")));
-        System.out.println("Working directory: " + commander.directory());
-        System.out.println("user.dir variable: " + System.getProperty("user.dir"));
+        System.out.println("Directorio de trabajo: " + commander.directory());
+        System.out.println("Variable user.dir: " + System.getProperty("user.dir"));
 
-        // Launch the process and show its result
-        // Working directory is user.home and the process is run on it
+        // Lanza el proceso y muestra su resultado
+        // El directorio de trabajo es user.home y el proceso se ejecuta ahí
         commander.start().waitFor();
     }
 }
