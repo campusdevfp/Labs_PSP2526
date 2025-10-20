@@ -1,41 +1,52 @@
 package procesos;
 
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.List;
 
 public class ExitValue {
 
     public static void main(String[] args) {
-        do {
-            // Código para pedir un programa/comando a ejecutar
-            Scanner teclado = new Scanner(System.in);
-            System.out.println("Introduce el programa / comando que quieres ejecutar (intro para acabar): ");
-            String comando = teclado.nextLine();
+        // Lista de comandos a ejecutar (modificable según tu sistema operativo)
+        List<String[]> comandos = List.of(
+                new String[]{"notepad"},                // Bloc de notas (Windows)
+                new String[]{"calc"},                   // Calculadora (Windows)
+                new String[]{"cmd", "/c", "dir"},       // Comando shell correcto
+                new String[]{"cmd", "/c", "noexiste"},  // Comando inexistente
+                new String[]{"cmd", "/c", "ping", "-xyz"} // Parámetros incorrectos
+        );
 
-            if (comando.equals("")) System.exit(0);
+        for (String[] comando : comandos) {
+            ejecutarYMostrar(comando);
+        }
 
-            try {
-                // Preparamos el entrono de ejecución del proceso
-                // Como no sabemos el contenido del comando, forzamos su conversión
-                // a una lista para que no haya problemas con su ejecución
-                ProcessBuilder pb = new ProcessBuilder(comando.split("\\s"));
+        System.out.println("\n--- Pruebas con System.exit() ---");
 
-                // Lanzamos el proceso hijo
-                Process p = pb.start();
+        // Prueba con System.exit(10)
+        // Descomenta para probar en IDEs :
+        // System.exit(10);
 
-                // Esperamos a que acabe para recoger el valor de salida
-                int exitValue = p.waitFor();
+        // Prueba con System.exit(0)
+        // Descomenta para probar en IDES:
+        // System.exit(0);
 
-                if (exitValue == 0) {
-                    System.out.println("El comando " + pb.command().toString() + " ha finalizado bien");
-                } else {
-                    System.out.println("El comando " + pb.command().toString() + " ha finalizado con errores. Código (" + exitValue + ")");
-                }
+        // Si no se llama explícitamente, el valor por defecto es 0.
+    }
 
-            } catch (InterruptedException | IOException ex) {
-                System.err.println(ex.getLocalizedMessage());
-                ex.printStackTrace();
-            }
-        } while (true);
+    private static void ejecutarYMostrar(String[] comando) {
+        try {
+            System.out.println("\nEjecutando: " + String.join(" ", comando));
+
+            ProcessBuilder pb = new ProcessBuilder(comando);
+            pb.inheritIO(); // Muestra salida y errores del proceso en la consola actual
+            Process proceso = pb.start();
+
+            int exitCode = proceso.waitFor(); // Esperar a que termine
+            System.out.println("Código de salida: " + exitCode);
+
+        } catch (IOException e) {
+            System.out.println("Error al ejecutar el comando: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println("La ejecución fue interrumpida");
+        }
     }
 }

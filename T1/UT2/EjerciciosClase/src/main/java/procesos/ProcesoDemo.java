@@ -21,6 +21,7 @@ class ProcesoDemo {
         p.destroy();
         // Check again if process remains alive
         alive = p.isAlive();
+
         // Get the process exit value
         int status = p.exitValue();
     }
