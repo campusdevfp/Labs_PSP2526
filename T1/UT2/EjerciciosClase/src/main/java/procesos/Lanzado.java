@@ -1,6 +1,7 @@
 package procesos;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Lanzado {
 
@@ -16,6 +17,17 @@ public class Lanzado {
             ProcessBuilder pb = new ProcessBuilder(programa);
             pb.inheritIO();
             Process proceso = pb.start();
+
+            // Get information about the current process
+//            ProcessHandle processHandle = ProcessHandle.current();
+//            ProcessHandle.Info processInfo = processHandle.info();
+//
+//            System.out.println("PID: " + processHandle.pid());
+//            System.out.println("Arguments: " + processInfo.arguments());
+//            System.out.println("Command: " + processInfo.command());
+//            System.out.println("Instant: " + processInfo.startInstant());
+//            System.out.println("Total CPU duration: " + processInfo.totalCpuDuration());
+//            System.out.println("User: " + processInfo.user());
 
             int codigoSalida = proceso.waitFor(); // Espera a que termine el proceso
             System.exit(codigoSalida); // Devuelve su mismo código de salida
