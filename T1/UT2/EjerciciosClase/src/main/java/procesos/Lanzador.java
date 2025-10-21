@@ -19,6 +19,13 @@ public class Lanzador {
             pb.inheritIO(); // hereda entrada/salida de la consola
 
             Process proceso = pb.start();
+            // Get information about a child process from parent
+
+            Process process = pb.inheritIO().start();
+            ProcessHandle childProcessHandle = process.toHandle();
+            ProcessHandle.Info childProcessInfo = childProcessHandle.info();
+
+
             int codigoSalida = proceso.waitFor();
 
             // Mostramos resultado
