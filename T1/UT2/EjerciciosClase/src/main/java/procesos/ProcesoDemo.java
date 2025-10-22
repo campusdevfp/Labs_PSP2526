@@ -6,7 +6,7 @@ class ProcesoDemo {
 
     public static void main(String[] args) throws Exception {
 
-        ProcessBuilder pb = new ProcessBuilder("C:\\Program Files\\Notepad++\\notepad++.exe");
+        ProcessBuilder pb = new ProcessBuilder("notepad.exe");
         // Effectively launch the process
         Process p = pb.start();
         // Check is process is alive or not
@@ -18,10 +18,9 @@ class ProcesoDemo {
             System.out.println("Timeout. Process hasn't finished");
         }
         // Force process termination.
-        p.destroy();
+        p.destroyForcibly();
         // Check again if process remains alive
         alive = p.isAlive();
-
         // Get the process exit value
         int status = p.exitValue();
     }

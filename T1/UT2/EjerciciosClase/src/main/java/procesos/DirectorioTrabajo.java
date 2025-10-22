@@ -38,8 +38,7 @@ public class DirectorioTrabajo {
         // 3️⃣ Cambiar el directorio de trabajo
         String nuevoDirectorio;
         if (sistemaOperativo.startsWith("windows")) {
-            nuevoDirectorio = "C:" +
-                    "\\Temp";
+            nuevoDirectorio = "C:\\Temp";
         } else {
             nuevoDirectorio = "/tmp";
         }
