@@ -23,7 +23,7 @@ public class ExitValue {
 
         // Prueba con System.exit(10)
         // Descomenta para probar en IDEs :
-        // System.exit(10);
+        System.exit(10);
 
         // Prueba con System.exit(0)
         // Descomenta para probar en IDES:

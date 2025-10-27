@@ -9,6 +9,10 @@ class ProcesoDemo {
         ProcessBuilder pb = new ProcessBuilder("C:\\Program Files\\Notepad++\\notepad++.exe");
         // Effectively launch the process
         Process p = pb.start();
+
+        ProcessHandle processHandle = ProcessHandle.current();
+        ProcessHandle.Info processInfo = processHandle.info();
+
         // Check is process is alive or not
         boolean alive = p.isAlive();
         // Wait for the process to end for 10 seconds.
