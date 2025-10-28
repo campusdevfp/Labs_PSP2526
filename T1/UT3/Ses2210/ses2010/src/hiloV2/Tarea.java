@@ -1,10 +1,10 @@
 package hiloV2;
-public class HiloV2 implements Runnable {
+public class Tarea implements Runnable {
 
     private String nombre;
     private boolean activado;
 
-    public HiloV2(String nombre){
+    public Tarea(String nombre){
         this.nombre = nombre;
         activado = true;
     }
