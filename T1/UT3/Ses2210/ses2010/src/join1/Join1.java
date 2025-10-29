@@ -20,10 +20,10 @@ public class Join1 {
         // hilo2.join();
 
         // (b) solo hilo2.join()
-//         hilo2.join();
+       //  hilo2.join();
 
         // (c) solo hilo1.join()
-//         hilo1.join();
+       // hilo1.join();
 
         System.out.println("⚠️  Main ha terminado y sigue con su vida...");
     }
