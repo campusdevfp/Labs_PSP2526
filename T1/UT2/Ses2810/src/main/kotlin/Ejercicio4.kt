@@ -12,6 +12,8 @@ fun main() {
     hilo.name = "PropiedadesHilo"
     hilo.priority = Thread.MAX_PRIORITY
     hilo.isDaemon = false
+    
+
 
     hilo.start()
     hilo.join()
