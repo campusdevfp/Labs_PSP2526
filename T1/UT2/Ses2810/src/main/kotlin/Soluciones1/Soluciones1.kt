@@ -9,7 +9,7 @@ import kotlin.concurrent.thread
  */
 fun ejercicio2() {
     val hilos = List(5) { i ->
-        val hilo = Thread {
+        Thread {
             val nombre = Thread.currentThread().name
             println("[$nombre] Iniciado (índice=$i)")
             try {
@@ -18,9 +18,9 @@ fun ejercicio2() {
                 println("[$nombre] Interrumpido")
             }
             println("[$nombre] Finalizado (índice=$i)")
-        }
-        hilo.name = "Hilo-$i"
-        hilo   // Devuelve el hilo configurado
+        }.apply{ name = "Hilo-$i"}
+
+
     }
 
     hilos.forEach { it.start() }
@@ -108,18 +108,18 @@ fun ejercicio5() {
  * Puedes comentar/descomentar las llamadas según el que quieras probar.
  */
 fun main() {
-    println("=== Ejercicio 2 ===")
-    ejercicio2()
-    println()
+//    println("=== Ejercicio 2 ===")
+//    ejercicio2()
+//    println()
 
-    println("=== Ejercicio 3 ===")
-    ejercicio3()
-    println()
+//    println("=== Ejercicio 3 ===")
+//    ejercicio3()
+//    println()
 
-    println("=== Ejercicio 4 ===")
-    ejercicio4()
-    println()
-
+//    println("=== Ejercicio 4 ===")
+//    ejercicio4()
+//    println()
+//
     println("=== Ejercicio 5 ===")
     ejercicio5()
 }
