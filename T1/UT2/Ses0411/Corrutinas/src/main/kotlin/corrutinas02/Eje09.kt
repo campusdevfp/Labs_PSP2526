@@ -11,33 +11,36 @@ class MyServiceList {
         val tasks = listOf(
             scope.async {
                 println("🔹 Tarea 1: obteniendo usuario...")
-                delay(1000)
+                delay(10000)
                 "👤 Usuario obtenido"
             },
             scope.async {
-                println("🔹 Tarea 2: descargando pedidos...")
+
                 delay(1500)
                 "📦 Pedidos descargados"
+                println("🔹 Tarea 2: descargando pedidos...")
             },
             scope.async {
-                println("🔹 Tarea 3: analizando datos...")
+
                 delay(500)
                 "📊 Datos analizados"
+                println("🔹 Tarea 3: analizando datos...")
             },
             scope.async {
-                println("🔹 Tarea 4: generando informe...")
-                delay(1200)
+
+                delay(5000)
                 "🧾 Informe generado"
+                println("🔹 Tarea 4: generando informe...")
             }
         )
 
         // 🔸 Recogemos todos los resultados en una corrutina separada
-        scope.launch {
-            println("⏳ Esperando resultados...")
-            val results = tasks.awaitAll()  // Espera a que todos los async terminen
-            println("✅ Todas las tareas completadas")
-            results.forEach { println(it) }
-        }
+//        scope.launch {
+//            println("⏳ Esperando resultados...")
+//            val results = tasks.awaitAll()  // Espera a que todos los async terminen
+//            println("✅ Todas las tareas completadas")
+//            results.forEach { println(it) }
+//        }
     }
 
     fun cleanup() {
@@ -49,6 +52,7 @@ class MyServiceList {
 fun main() = runBlocking {
     val service = MyServiceList()
     service.doWork()
-    delay(2500) // Esperamos a que terminen todas las tareas
     service.cleanup()
+    delay(2500) // Esperamos a que terminen todas las tareas
+
 }

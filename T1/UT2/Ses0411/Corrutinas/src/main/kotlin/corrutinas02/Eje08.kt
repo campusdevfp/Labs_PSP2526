@@ -22,6 +22,7 @@ class MyService {
     }
 
     fun cleanup() {
+
         scope.cancel() // Cancela todas las corrutinas
     }
 }
