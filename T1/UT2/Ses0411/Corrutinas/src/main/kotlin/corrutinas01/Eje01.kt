@@ -17,36 +17,36 @@ data class Order(val id: Int, val description: String)
 
 
 // Versión secuencial
-//fun main() = runBlocking {
-//    println("Iniciando fetchUser()...")
-//    val user = fetchUser(1)
-//    println("Usuario obtenido: $user")
-//
-//    println("Iniciando fetchOrders()...")
-//    val orders = fetchOrders2(user.id)
-//    println("Pedidos: $orders")
-//
-//    println("Programa finalizado.")
-//}
-
-// Versión con launch
-
 fun main() = runBlocking {
-    println("Inicio del programa...")
+    println("Iniciando fetchUser()...")
+    val user = fetchUser(1)
+    println("Usuario obtenido: $user")
 
-    // 🔹 Lanza corrutina para obtener el usuario
-    launch {
-        println("Iniciando fetchUser()...")
-        val user = fetchUser(1)
-        println("Usuario obtenido: $user")
-    }
-
-    // 🔹 Lanza otra corrutina para obtener los pedidos
-    launch {
-        println("Iniciando fetchOrders()...")
-        val orders = fetchOrders(1)
-        println("Pedidos: $orders")
-    }
+    println("Iniciando fetchOrders()...")
+    val orders = fetchOrders(user.id)
+    println("Pedidos: $orders")
 
     println("Programa finalizado.")
 }
+
+// Versión con launch
+
+//fun main() = runBlocking {
+//    println("Inicio del programa...")
+//
+//    // 🔹 Lanza corrutina para obtener el usuario
+//    launch {
+//        println("Iniciando fetchUser()...")
+//        val user = fetchUser(1)
+//        println("Usuario obtenido: $user")
+//    }
+//
+//    // 🔹 Lanza otra corrutina para obtener los pedidos
+//    launch {
+//        println("Iniciando fetchOrders()...")
+//        val orders = fetchOrders(1)
+//        println("Pedidos: $orders")
+//    }
+//
+//    println("Programa finalizado.")
+//}

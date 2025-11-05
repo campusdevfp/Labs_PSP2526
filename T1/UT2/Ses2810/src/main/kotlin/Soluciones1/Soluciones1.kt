@@ -108,9 +108,9 @@ fun ejercicio5() {
  * Puedes comentar/descomentar las llamadas según el que quieras probar.
  */
 fun main() {
-//    println("=== Ejercicio 2 ===")
-//    ejercicio2()
-//    println()
+    println("=== Ejercicio 2 ===")
+    ejercicio2()
+    println()
 
 //    println("=== Ejercicio 3 ===")
 //    ejercicio3()
@@ -120,6 +120,6 @@ fun main() {
 //    ejercicio4()
 //    println()
 //
-    println("=== Ejercicio 5 ===")
-    ejercicio5()
+//    println("=== Ejercicio 5 ===")
+//    ejercicio5()
 }
