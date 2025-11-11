@@ -1,24 +1,36 @@
 package app.corrutinas02
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 fun main() = runBlocking {
-    println("Inicio del scope padre")
+    println("🌱 Inicio del scope padre")
 
-    launch {
-        println("Corrutina hija 1 iniciada")
-        delay(1000)
-        println("Corrutina hija 1 completada")
+    val jobPadre = launch {
+        println("➡️ Corrutina padre iniciada")
+
+        launch {
+            println("👶 Hija 1 iniciada")
+            try {
+                delay(2000)
+                println("👶 Hija 1 completada")
+            } catch (e: CancellationException) {
+                println("💀 Hija 1 cancelada")
+            }
+        }
+
+        launch {
+            println("👶 Hija 2 iniciada")
+            try {
+                delay(3000)
+                println("👶 Hija 2 completada")
+            } catch (e: CancellationException) {
+                println("💀 Hija 2 cancelada")
+            }
+        }
     }
 
-    launch {
-        println("Corrutina hija 2 iniciada")
-        delay(500)
-        println("Corrutina hija 2 completada")
-    }
-
-    println("Esperando a las hijas...")
-    // runBlocking espera automáticamente a todas las corrutinas hijas
+    delay(1000)
+    println("💥 Cancelando al padre")
+    jobPadre.cancelAndJoin()   // 🔥 Aquí se cancela todo el árbol de corrutinas
+    println("🏁 Fin del scope padre")
 }
