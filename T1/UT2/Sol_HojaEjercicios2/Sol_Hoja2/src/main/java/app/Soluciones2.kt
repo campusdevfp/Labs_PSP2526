@@ -354,59 +354,9 @@ fun practicaC() = runBlocking {
     println("Descarga completada!")
 }
 
-// ============================================
-// PRÁCTICA D — Bridge para APIs callback
-// ============================================
-
-class DownloadCall {
-    var isCancelled = false
-
-    fun cancel() {
-        isCancelled = true
-        println("Llamada cancelada")
-    }
-}
-
-fun startDownload(url: String, callback: (ByteArray?, Exception?) -> Unit): DownloadCall {
-    val call = DownloadCall()
-
-    Thread {
-        Thread.sleep(1000)
-        if (!call.isCancelled) {
-            callback("Data from $url".toByteArray(), null)
-        }
-    }.start()
-
-    return call
-}
-
-suspend fun downloadSuspending(url: String): ByteArray = suspendCancellableCoroutine { cont ->
-    val call = startDownload(url) { data, error ->
-        if (error != null) {
-            cont.resumeWithException(error)
-        } else if (data != null) {
-            cont.resume(data)
-        }
-    }
-
-    cont.invokeOnCancellation {
-        call.cancel()
-    }
-}
-
-fun practicaD() = runBlocking {
-    println("\n=== PRÁCTICA D ===")
-    try {
-        println("Iniciando descarga...")
-        val data = downloadSuspending("http://example.com/file.zip")
-        println("Descargado: ${String(data)}")
-    } catch (e: Exception) {
-        println("Error: ${e.message}")
-    }
-}
 
 // ============================================
-// PRÁCTICA E — Servicio con CoroutineScope
+// PRÁCTICA D — Servicio con CoroutineScope
 // ============================================
 
 class WorkerService {
@@ -432,8 +382,8 @@ class WorkerService {
     fun isRunning(): Boolean = scope.isActive
 }
 
-fun practicaE() = runBlocking {
-    println("\n=== PRÁCTICA E ===")
+fun practicaD() = runBlocking {
+    println("\n=== PRÁCTICA D ===")
     val service = WorkerService()
 
     service.start()
@@ -471,8 +421,8 @@ fun main() {
     // practicaA()
 //     practicaB()
 //     practicaC()
-//     practicaD()
-     practicaE()
+     practicaD()
+
 
     println("\n========================================")
     println("FIN DE LAS SOLUCIONES")
