@@ -1,4 +1,4 @@
-package app
+package Sol2Parte1
 
 
 
@@ -54,10 +54,10 @@ fun actividad2() = runBlocking {
 
     // Versión paralela con async
     val startPar = System.currentTimeMillis()
-    val d1 = async { op(1) }
-    val d2 = async { op(2) }
-    val res1 = d1.await()
-    val res2 = d2.await()
+    val d1 = launch { op(1) }
+    val d2 = launch { op(2) }
+    val res1 = d1.join()
+    val res2 = d2.join()
     val timePar = System.currentTimeMillis() - startPar
     println("Paralelo: $res1, $res2")
     println("Tiempo paralelo: ${timePar}ms")
@@ -129,97 +129,63 @@ fun actividad5() = runBlocking {
     }
 
     // Consumidor
-    launch {
-        for (value in channel) {
-            println("Recibido: $value")
-        }
-        println("Proceso completado")
+    for (value in channel) {
+        println("Recibido: $value")
     }
+
+    println("Proceso completado")
 }
 
 // ============================================
 // ACTIVIDAD 6 — Flow básico y operadores
 // ============================================
 
-fun simpleFlow(): Flow<Int> = flow {
-    println("Flow iniciado")
-    for (i in 1..10) {
-        delay(100)
-        emit(i)
-    }
-}
-
 fun actividad6() = runBlocking {
     println("\n=== ACTIVIDAD 6 ===")
-    println("Llamando a flow...")
-    val flow = simpleFlow()
-
-    println("Colectando con operadores...")
-    flow
+    (1..6).asFlow()
         .filter { it % 2 == 0 }
-        .map { it * 10 }
-        .buffer(3)
-        .take(3)
+        .map { it * it }
+        .take(2)
         .collect { value ->
-            println("Procesado $value")
+            println(value)
         }
-
-    println("Finalizado")
 }
 
-
 // ============================================
-// ACTIVIDAD 7 — Buffered Channels
+// ACTIVIDAD 7 — StateFlow y SharedFlow (observadores)
 // ============================================
 
+class Counter {
+    private val _count = MutableStateFlow(0)
+    val count: StateFlow<Int> = _count.asStateFlow()
+
+    fun increment() {
+        _count.value++
+    }
+}
 
 fun actividad7() = runBlocking {
-    println("\n=== ACTIVIDAD 7 — Buffered Channels ===")
+    println("\n=== ACTIVIDAD 7 ===")
+    val counter = Counter()
 
-    // Cambia esta capacidad y observa el comportamiento: 0, 3, Channel.UNLIMITED
-    val capacity: Int = 3
-    val channel: Channel<Int> = Channel(capacity)
-
-    val start = System.currentTimeMillis()
-
-    // Productor
-    val producer = launch {
-        try {
-            for (v in 1..20) {
-                println("PROD -> Enviando $v")
-                channel.send(v) // se suspende si el buffer está lleno (según capacidad)
-                delay(30)
-            }
-        } finally {
-            channel.close()
-            println("PROD -> Canal cerrado")
+    // Observador
+    launch {
+        counter.count.collect { value ->
+            println("Contador: $value")
         }
     }
 
-    // Consumidor rápido
-    val consumerFast = launch {
-        for (v in channel) {
-            println("C2 (rápido) <- $v")
-            delay(40)
+    delay(100) // Asegurar que el observador esté listo
+
+    // Incrementador
+    launch {
+        repeat(3) {
+            delay(150)
+            counter.increment()
         }
-        println("C2 (rápido) completado")
     }
 
-    // Consumidor lento
-    val consumerSlow = launch {
-        // Nota: al iterar el mismo canal, el trabajo se reparte entre consumidores
-        for (v in channel) {
-            println("C1 (lento)  <- $v")
-            delay(80)
-        }
-        println("C1 (lento) completado")
-    }
-
-    // Esperar finalización
-    joinAll(producer, consumerFast, consumerSlow)
-
-    val total = System.currentTimeMillis() - start
-    println("Tiempo total: ${total}ms (capacidad=$capacity)")
+    delay(600) // Esperar a que termine
 }
 
 // ============================================
@@ -234,19 +200,12 @@ fun actividad8() = runBlocking {
         val child1 = launch {
             delay(100)
             println("Hija 1 completada")
-            try {
-                throw RuntimeException("Error en hija 2")
-
-            }catch (e: Exception){
-                println("Capturo excepción: ${e.message}")
-            }
         }
 
         val child2 = launch {
             delay(50)
             println("Hija 2 va a fallar")
             throw RuntimeException("Error en hija 2")
-
         }
 
         val child3 = launch {
@@ -254,13 +213,13 @@ fun actividad8() = runBlocking {
             println("Hija 3 completada")
         }
 
-
-
-
-
+        try {
+            child2.join()
+        } catch (e: Exception) {
+            println("Capturada excepción: ${e.message}")
+        }
 
         child1.join()
-        child2.join()
         child3.join()
     }
 
@@ -287,7 +246,6 @@ suspend fun fetchPermissions(id: Int): Permissions {
 
 fun practicaA() = runBlocking {
     println("\n=== PRÁCTICA A ===")
-
     val startTime = System.currentTimeMillis()
 
     supervisorScope {
@@ -312,8 +270,7 @@ fun practicaA() = runBlocking {
 // ============================================
 
 suspend fun processImage(id: Int): Int = withContext(Dispatchers.Default) {
-    val coroutineName = coroutineContext[CoroutineName]?.name
-    println("[$coroutineName] Procesando imagen $id")
+    println("[${Thread.currentThread().name}] Procesando imagen $id")
     var result = 0
     repeat(50_000) {
         result += (it % 3)
@@ -327,7 +284,7 @@ fun practicaB() = runBlocking {
     val startTime = System.currentTimeMillis()
 
     val deferred = images.map { id ->
-        async(CoroutineName("process-$id")) { processImage(id) }
+        async { processImage(id) }
     }
 
     val results = deferred.awaitAll()
@@ -361,9 +318,59 @@ fun practicaC() = runBlocking {
     println("Descarga completada!")
 }
 
+// ============================================
+// PRÁCTICA D — Bridge para APIs callback
+// ============================================
+
+class DownloadCall {
+    var isCancelled = false
+
+    fun cancel() {
+        isCancelled = true
+        println("Llamada cancelada")
+    }
+}
+
+fun startDownload(url: String, callback: (ByteArray?, Exception?) -> Unit): DownloadCall {
+    val call = DownloadCall()
+
+    Thread {
+        Thread.sleep(1000)
+        if (!call.isCancelled) {
+            callback("Data from $url".toByteArray(), null)
+        }
+    }.start()
+
+    return call
+}
+
+suspend fun downloadSuspending(url: String): ByteArray = suspendCancellableCoroutine { cont ->
+    val call = startDownload(url) { data, error ->
+        if (error != null) {
+            cont.resumeWithException(error)
+        } else if (data != null) {
+            cont.resume(data)
+        }
+    }
+
+    cont.invokeOnCancellation {
+        call.cancel()
+    }
+}
+
+fun practicaD() = runBlocking {
+    println("\n=== PRÁCTICA D ===")
+    try {
+        println("Iniciando descarga...")
+        val data = downloadSuspending("http://example.com/file.zip")
+        println("Descargado: ${String(data)}")
+    } catch (e: Exception) {
+        println("Error: ${e.message}")
+    }
+}
 
 // ============================================
-// PRÁCTICA D — Servicio con CoroutineScope
+// PRÁCTICA E — Servicio con CoroutineScope
 // ============================================
 
 class WorkerService {
@@ -389,8 +396,8 @@ class WorkerService {
     fun isRunning(): Boolean = scope.isActive
 }
 
-fun practicaD() = runBlocking {
-    println("\n=== PRÁCTICA D ===")
+fun practicaE() = runBlocking {
+    println("\n=== PRÁCTICA E ===")
     val service = WorkerService()
 
     service.start()
@@ -415,21 +422,21 @@ fun main() {
 
     // Descomenta las actividades que quieras ejecutar:
 
-//     actividad1()
-    // actividad2()
-    // actividad3()
-    // actividad4()
+//    actividad1()
+    actividad2()
+//    actividad3()
+//    actividad4()
 //    actividad5()
-    // actividad6()
-    // actividad7() // <- descomenta para probar la actividad de Buffered Channels
-     actividad8()
+//    actividad6()
+//    actividad7()
+//    actividad8()
 
     // Prácticas reales
-    // practicaA()
-//     practicaB()
-//     practicaC()
-//     practicaD()
-
+//    practicaA()
+//    practicaB()
+//    practicaC()
+//    practicaD()
+//    practicaE()
 
     println("\n========================================")
     println("FIN DE LAS SOLUCIONES")
