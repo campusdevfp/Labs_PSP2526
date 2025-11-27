@@ -46,6 +46,7 @@ class MyServiceList {
     fun cleanup() {
         println("🛑 Cancelando todas las corrutinas del servicio...")
         scope.cancel()
+
     }
 }
 
