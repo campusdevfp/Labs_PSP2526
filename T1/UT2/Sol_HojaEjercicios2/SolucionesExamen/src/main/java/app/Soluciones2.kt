@@ -237,9 +237,13 @@ fun actividad8() = runBlocking {
         }
 
         val child2 = launch {
-            delay(50)
-            println("Hija 2 va a fallar")
-            throw RuntimeException("Error en hija 2")
+            try {
+                delay(50)
+                println("Hija 2 va a fallar")
+                throw RuntimeException("Error en hija 2")
+            } catch (e: Exception) {
+                println("Capturada excepción: ${e.message}")
+            }
         }
 
         val child3 = launch {
