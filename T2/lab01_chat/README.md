@@ -312,26 +312,6 @@ setContent {
 
 ---
 
-# Reto para alumnos (mini-proyecto)
-
-## “Tablero colaborativo en tiempo real”
-
-Parten del proyecto anterior.
-
-### Requisitos mínimos
-
-* Estado compartido: lista de “items” (id, texto, estado).
-* Eventos WS:
-
-    * `ADD_ITEM`
-    * `TOGGLE_ITEM`
-    * `DELETE_ITEM`
-* Servidor autoritativo (valida y reemite snapshot).
-* UI Compose reactiva + ViewModel + StateFlow.
-* (Extra) reconexión simple o “salas” (`roomId`).
-
-Con esto aprenden WS de verdad: **eventos, broadcast, sincronización, estado**.
-
 # Backend FastAPI con WebSockets 
 
 ## 1. Qué papel juega el backend
@@ -510,3 +490,45 @@ Sino porque:
 
 ---
 
+# Reto para alumnos (mini-proyecto)
+
+## “Tablero colaborativo en tiempo real”
+
+Parten del proyecto anterior.
+
+### Descripción general
+- **Idea principal**: Un tablero donde los usuarios agregan tareas (items), las marcan como completadas/incompletas y las eliminan. Es colaborativo: si un usuario marca una tarea como "hecha", todos lo ven al instante.
+- **Estado compartido**: Una lista de "items" mantenida en el servidor. Cada item tiene:
+    - `id`: Identificador único (puedes usar un contador o UUID).
+    - `text`: Descripción de la tarea (ej. "Comprar leche").
+    - `status`: Estado (ej. `false` para pendiente, `true` para completada).
+- **Ejemplo de estado inicial**:
+  ```json
+  [
+    {"id": 1, "text": "Hacer la compra", "status": false},
+    {"id": 2, "text": "Estudiar Kotlin", "status": true}
+  ]
+  ```
+- **Interacción**: Los usuarios interactúan con botones en la UI para agregar, alternar estado o eliminar items. El servidor valida las acciones y reenvía el estado completo a todos los clientes conectados.
+
+### Requisitos mínimos
+
+* Estado compartido: lista de “items” (id, texto, estado).
+* Eventos WS:
+    * `ADD_ITEM`: Agrega un nuevo item. Payload: `{"text": "Descripción de la tarea"}`. El servidor asigna un `id` único y añade el item con `status: false`.
+    * `TOGGLE_ITEM`: Alterna el estado de un item. Payload: `{"id": 123}`. Cambia `status` de `false` a `true` o viceversa.
+    * `DELETE_ITEM`: Elimina un item. Payload: `{"id": 123}`. Remueve el item de la lista.
+* Servidor autoritativo (valida y reemite snapshot).
+* UI Compose reactiva + ViewModel + StateFlow.
+* (Extra) reconexión simple o “salas” (`roomId`).
+
+### Flujo de ejemplo
+1. Usuario A agrega: "Limpiar habitación" → Envía `ADD_ITEM` → Servidor añade item con id=3, status=false → Broadcast `SNAPSHOT` con lista actualizada → Todos ven el nuevo item.
+2. Usuario B marca como completada → Envía `TOGGLE_ITEM` con id=3 → Servidor cambia status a true → Broadcast snapshot → Todos ven el cambio.
+3. Usuario A elimina → Envía `DELETE_ITEM` con id=3 → Servidor remueve → Broadcast snapshot → Item desaparece para todos.
+
+### Consejos para implementar
+- **Backend**: Modifica `main.py` del proyecto base. Cambia `state` a `items = []` (lista de dicts). En el endpoint WS, maneja los nuevos eventos y envía snapshots con `{"type": "SNAPSHOT", "payload": items}`.
+- **Android**: Actualiza `DashboardViewModel` para manejar la lista de items. Cambia `DashboardState` a algo como `data class DashboardState(val connected: Boolean = false, val items: List<Item> = emptyList())`. En `handleMessage`, actualiza la lista.
+- **UI**: En `DashboardScreen`, muestra un `TextField` para agregar, y una lista con `items.forEach { item -> ... }` o `LazyColumn`.
+- **Aprendizaje clave**: Enfócate en sincronización: el servidor empuja cambios, no los clientes preguntan.
