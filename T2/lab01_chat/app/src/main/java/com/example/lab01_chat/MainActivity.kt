@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DashboardScreen(wsUrl = "ws://10.231.135.233:8000/ws") // emulador -> host
+          // emulador -> host
         }
 
     }
