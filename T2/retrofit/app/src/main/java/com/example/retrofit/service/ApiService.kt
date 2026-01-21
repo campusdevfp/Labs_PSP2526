@@ -7,10 +7,18 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlinx.coroutines.Deferred
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("posts")
     suspend fun getPosts(): List<Post>
+
+    @GET("v1/forecast")
+    suspend fun getWeather(
+        @Query lat: Double,
+        lon: Double,
+        current : Boolean = true
+    )
 
     companion object {
         operator fun invoke(): ApiService {
